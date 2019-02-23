@@ -22,6 +22,14 @@
 
 package net.smoofyuniverse.common.ore.object;
 
+import com.google.gson.JsonParser;
+import net.smoofyuniverse.common.app.App;
+import net.smoofyuniverse.common.download.ConnectionConfiguration;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 
@@ -34,17 +42,30 @@ public class VersionInfo {
 	public int id, fileSize, downloads;
 	public boolean staffApproved;
 
-	private transient String apiVersion;
-
 	public String getApiVersion() {
-		if (this.apiVersion == null) {
-			for (DependencyInfo d : this.dependencies) {
-				if (d.pluginId.equals("spongeapi")) {
-					this.apiVersion = d.version;
-					break;
-				}
-			}
+		for (DependencyInfo d : this.dependencies) {
+			if (d.pluginId.equals("spongeapi"))
+				return d.version;
 		}
-		return this.apiVersion;
+		return null;
+	}
+
+	public HttpURLConnection openDownloadConnection() throws IOException {
+		return openDownloadConnection(App.get().getConnectionConfig());
+	}
+
+	public HttpURLConnection openDownloadConnection(ConnectionConfiguration cfg) throws IOException {
+		URL url = new URL("https://ore.spongepowered.org/api/projects/" + this.pluginId + "/versions/" + this.name + "/download");
+		if (this.staffApproved)
+			return cfg.openHttpConnection(url);
+
+		try (InputStreamReader in = new InputStreamReader(cfg.openStream(url))) {
+			url = new URL(new JsonParser().parse(in).getAsJsonObject().get("post").getAsString());
+		}
+
+		HttpURLConnection co = cfg.openHttpConnection(url);
+		co.setRequestMethod("POST");
+		co.setInstanceFollowRedirects(true);
+		return co;
 	}
 }

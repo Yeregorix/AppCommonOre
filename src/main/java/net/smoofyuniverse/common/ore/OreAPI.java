@@ -24,7 +24,6 @@ package net.smoofyuniverse.common.ore;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.download.ConnectionConfiguration;
@@ -109,12 +108,6 @@ public class OreAPI {
 		} finally {
 			if (co != null)
 				co.disconnect();
-		}
-	}
-
-	public static URL getDownloadUrl(String projectId, String version) throws IOException {
-		try (InputStreamReader in = new InputStreamReader(App.get().getConnectionConfig().openStream(new URL("https://ore.spongepowered.org/api/projects/" + projectId + "/versions/" + version + "/download")))) {
-			return new URL(new JsonParser().parse(in).getAsJsonObject().get("post").getAsString());
 		}
 	}
 
