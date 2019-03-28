@@ -29,8 +29,8 @@ import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.download.ConnectionConfiguration;
 import net.smoofyuniverse.common.ore.adapter.InstantAdapter;
 import net.smoofyuniverse.common.ore.object.VersionInfo;
-import net.smoofyuniverse.common.task.listener.IncrementalListener;
-import net.smoofyuniverse.common.task.listener.IncrementalListenerProvider;
+import net.smoofyuniverse.common.task.IncrementalListener;
+import net.smoofyuniverse.common.task.IncrementalListenerProvider;
 import net.smoofyuniverse.common.util.IOUtil;
 import net.smoofyuniverse.logger.core.Logger;
 
@@ -77,7 +77,7 @@ public class OreAPI {
 				expected = -1;
 			}
 
-			IncrementalListener l = p.provide(expected);
+			IncrementalListener l = p.expect(expected);
 
 			try (Reader in = new InputStreamReader(co.getInputStream()) {
 
